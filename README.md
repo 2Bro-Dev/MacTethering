@@ -13,8 +13,12 @@ throughput and ping.
 
 ```bash
 brew tap 2Bro-Dev/tap
+brew trust 2Bro-Dev/tap
 brew install mactethering
 ```
+
+Homebrew asks for that `brew trust` line before it will load a cask from any
+third-party tap; without it the install stops with a refusal.
 
 Or download the disk image from [Releases](../../releases/latest) and drag
 MacTethering to Applications.
