@@ -1,0 +1,53 @@
+name: brew tap checks
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions: {}
+
+defaults:
+  run:
+    shell: bash -xeuo pipefail {0}
+
+# The repository is not named homebrew-*, so Homebrew does not treat it as a
+# tap on its own: it is tapped from the checkout under the same name users
+# give it (brew tap 2Bro-Dev/mactethering https://github.com/2Bro-Dev/MacTethering).
+env:
+  TAP: 2bro-dev/mactethering
+
+jobs:
+  tap-checks:
+    runs-on: macos-26
+    permissions:
+      contents: read
+    steps:
+      - name: Check out
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@b35a29a0f83ee8b8ca07b219fc8db3d7bb88ab49 # 2026.08.10.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Cache Homebrew Bundler RubyGems
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.set-up-homebrew.outputs.gems-path }}
+          key: macos-26-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
+          restore-keys: macos-26-rubygems-
+
+      - run: brew tap "${TAP}" "${GITHUB_WORKSPACE}"
+
+      - run: brew trust --tap "${TAP}"
+
+      # Style + offline audit of every cask in the tap. The install itself is
+      # not exercised: it would need the notarised DMG and a real Mac session.
+      - run: brew style "${TAP}"
+
+      - run: brew audit --cask --tap="${TAP}"
