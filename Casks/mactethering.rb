@@ -1,6 +1,6 @@
 cask "mactethering" do
-  version "1.5"
-  sha256 "586d7a4b6471ae10354045aeb83a723f3c45922a14dc940b1722b57d192a42aa"
+  version "1.6"
+  sha256 "642489a46a9ce1e9ea0fef5bc6caf849f3d715a605b020c57a49affd20fe30b8"
 
   url "https://github.com/2Bro-Dev/MacTethering/releases/download/v#{version}/MacTethering.dmg"
   name "MacTethering"
